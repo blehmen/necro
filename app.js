@@ -1,4 +1,5 @@
-const SKEY="sr-pwa-state-v04";
+const SKEY="sr-pwa-state-v06";
+let tesseractPromise=null;
 let guide=[], tips=[], cfg={}, state=null, pendingDetected=null, templateCache=[];
 const $=id=>document.getElementById(id);
 const DAY_START={1:0,2:37,3:60};
@@ -13,9 +14,10 @@ const stationDefs=[
  ['anvil','Anvil level',4],['at','Alchemy Table level',2],['ironCap','Iron cap',300000],['crates','Max-level Iron Crates held',0],['banners','Complete banners on board',0],['damageHour','Cannon damage/hour',169000],['scoreMult','Score multiplier',1.3],['bombUp','Bomb damage upgrades maxed',false],['mageHp','Mage/Magic Decoy HP currently/planned',316000]
 ];
 async function load(){
- // Bind the UI first. A failed data request must never disable buttons such as
- // screenshot import. GitHub Pages/service-worker cache failures are handled
- // independently below.
+ // Initialize a usable local state BEFORE binding. Screenshot import must work
+ // even while JSON data or OCR libraries are still loading.
+ const fallback={score:0,iron:0,gunpowder:0,steel:0,gems:0,eventEnd:null,sleeping:false,sleepStarted:null,sleepWake:null,completed:{},board:{},stations:{},lastScreenshot:null};
+ state=normalize(JSON.parse(localStorage.getItem(SKEY)||'null')||fallback);
  bind();
  try {
    const [g,t,c,d] = await Promise.all([
@@ -48,6 +50,7 @@ function save(){localStorage.setItem(SKEY,JSON.stringify(state))}
 function bind(){
  ['score','iron','gp','steel','gems'].forEach(id=>$(id).addEventListener('change',e=>{state[id==='gp'?'gunpowder':id]=Math.max(0,Number(e.target.value)||0);save();renderAll()}));
  $('resetBtn').onclick=()=>{if(confirm('Reset the local event state?')){localStorage.removeItem(SKEY);location.reload()}};
+ $('screenshotBtn').onclick=()=>$('fileInput').click();
  $('fileInput').onchange=e=>{
    const file=e.target.files&&e.target.files[0];
    if(!file)return;
@@ -108,22 +111,41 @@ function renderSleep(){$('sleepBtn').hidden=state.sleeping;$('wakeBtn').hidden=!
 function fmtNum(n){return Math.round(Number(n)||0).toLocaleString()}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function parseCompact(s){if(!s)return null;s=String(s).replace(/,/g,'').replace(/\s/g,'').replace(/[Oo]/g,'0');let m=s.match(/(-?[0-9]+(?:\.[0-9]+)?)([kKmMbB])?/);if(!m)return null;let n=Number(m[1]);const u=(m[2]||'').toLowerCase();if(u==='k')n*=1e3;if(u==='m')n*=1e6;if(u==='b')n*=1e9;return Math.round(n)}
+async function ensureTesseract(){
+ if(window.Tesseract)return true;
+ if(tesseractPromise)return tesseractPromise;
+ tesseractPromise=new Promise(resolve=>{
+   const script=document.createElement('script');
+   script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+   script.async=true;
+   script.onload=()=>resolve(!!window.Tesseract);
+   script.onerror=()=>resolve(false);
+   document.head.appendChild(script);
+ });
+ return tesseractPromise;
+}
 async function ocrCrop(img,box){const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*(box[2]-box[0]));c.height=Math.round(img.naturalHeight*(box[3]-box[1]));const x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(img,img.naturalWidth*box[0],img.naturalHeight*box[1],img.naturalWidth*(box[2]-box[0]),img.naturalHeight*(box[3]-box[1]),0,0,c.width,c.height);const r=await Tesseract.recognize(c,'eng',{logger:m=>{if(m.status==='recognizing text')$('ocrStatus').textContent=`OCR ${Math.round((m.progress||0)*100)}%`}});return r.data.text}
 const OCR_BOXES={score:[.105,.067,.205,.103],iron:[.315,.067,.445,.103],gp:[.685,.067,.805,.103],gems:[.825,.067,.925,.103],event:[.02,.145,.145,.215]};
 async function analyzeScreenshot(file){
+ // UI update FIRST. Nothing below this point should be able to prevent the
+ // user from seeing that the selected file was received.
  $('screenshotCard').hidden=false;
- $('ocrStatus').textContent='Loading screenshot…';
+ $('ocrStatus').textContent=`FILE SELECTED: ${file.name} (${Math.round(file.size/1024)} KB)`;
  $('ocrResults').innerHTML='';
+ $('detectedGrid').innerHTML='';
+ $('shotPreview').removeAttribute('src');
  const url=URL.createObjectURL(file);
+ $('shotPreview').src=url;
+ state.lastScreenshot={name:file.name,time:new Date().toISOString()};
+ save();
+ await new Promise(requestAnimationFrame);
  const img=new Image();
  img.src=url;
  await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('The selected file is not a readable image.'))});
- $('shotPreview').src=url;
- $('ocrStatus').textContent=`Screenshot loaded (${Math.round(file.size/1024)} KB). Starting OCR…`;
- state.lastScreenshot={name:file.name,time:new Date().toISOString()};
- save();
+ $('ocrStatus').textContent=`Screenshot loaded. ${img.naturalWidth}×${img.naturalHeight}. Preparing OCR…`;
  let detected={score:null,iron:null,gunpowder:null,steel:null,gems:null,eventText:null,board:{}};
- if(window.Tesseract){
+ const ocrAvailable=await ensureTesseract();
+ if(ocrAvailable){
    for(const [key,box] of Object.entries(OCR_BOXES)){
      try{
        const text=await ocrCrop(img,box);
@@ -139,11 +161,11 @@ async function analyzeScreenshot(file){
    $('ocrStatus').textContent='OCR engine is unavailable. Board recognition can still be reviewed manually.';
  }
  $('ocrResults').innerHTML=`<div class="statgrid">${['score','iron','gunpowder','steel','gems'].map(k=>`<label>${k==='gunpowder'?'Gunpowder':k[0].toUpperCase()+k.slice(1)}<input id="det-${k}" type="number" value="${detected[k]??''}"></label>`).join('')}</div><div class="notice">Detected event text: ${escapeHtml(detected.eventText||'—')}. If OCR missed a value, edit it here before applying.</div>`;
- $('ocrStatus').textContent=window.Tesseract?'OCR finished. Reviewing board…':'OCR unavailable. Reviewing board…';
+ $('ocrStatus').textContent=ocrAvailable?'OCR finished. Reviewing board…':'OCR unavailable. Reviewing board…';
  try {
    const board=await detectBoard(img);
    detected.board=board; pendingDetected=detected; renderDetected(board);
-   $('ocrStatus').textContent=window.Tesseract?'Screenshot read. Review the detected values and board before applying.':'Screenshot loaded. Review the board; OCR was unavailable.';
+   $('ocrStatus').textContent=ocrAvailable?'Screenshot read. Review the detected values and board before applying.':'Screenshot loaded. Review the board; OCR was unavailable.';
  } catch(e) {
    console.error('Board detection failed:',e);
    pendingDetected=detected;
@@ -158,5 +180,7 @@ async function detectBoard(img){const W=img.naturalWidth,H=img.naturalHeight;con
 function labelFromFile(f){let s=f.replace(/\.(webp|png)$/,'').replaceAll('_',' ');s=s.replace('Floating Weapon','Weapon').replace('Battle Mage','Battle Mage');return s}
 function renderDetected(board){$('detectedGrid').innerHTML='';for(let r=0;r<8;r++)for(let c=0;c<5;c++){const k=`${r}-${c}`,v=board[k]||{name:'Empty / unknown'};const d=document.createElement('div');d.className='det-cell';d.innerHTML=`<span>${r+1},${c+1}</span><select data-cell="${k}">${['Empty / unknown',...boardOptions].map(o=>`<option ${o===v.name?'selected':''}>${escapeHtml(o)}</option>`).join('')}</select><small>${v.score??''}</small>`;$('detectedGrid').appendChild(d)}$('detectedGrid').querySelectorAll('select').forEach(s=>s.onchange=()=>{pendingDetected.board[s.dataset.cell]={name:s.value,score:0}})}
 function applyDetected(){if(!pendingDetected)return;for(const k of ['score','iron','gunpowder','steel','gems']){const v=Number($('det-'+k)?.value);if(Number.isFinite(v)&&v>=0)state[k]=v}state.board={};Object.values(pendingDetected.board).forEach(v=>{if(v.name&&v.name!=='Empty / unknown')state.board[v.name]=(state.board[v.name]||0)+1});save();$('screenshotCard').hidden=true;pendingDetected=null;renderAll()}
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js'));
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js?v=6').catch(e=>console.warn('SW registration failed',e)));
+window.addEventListener('error',e=>showAppError('JavaScript error: '+(e.message||'Unknown error')));
+window.addEventListener('unhandledrejection',e=>showAppError('Unexpected error: '+(e.reason?.message||e.reason||'Unknown error')));
 load();
