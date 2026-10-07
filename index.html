@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#120c20">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Sibling Rivalry Companion</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand"><span class="star">★</span><div><b>Sibling Rivalry</b><small>Companion PWA · v0.2</small></div></div>
+  <div class="header-actions"><button id="resetBtn" class="ghost">Reset</button></div>
+</header>
+<main>
+<section class="hero card">
+  <div class="eventline"><div><span class="label">EVENT TIME</span><strong id="eventTimer">Set event end time</strong></div><button id="setEventBtn">Set</button></div>
+  <div class="progress"><div id="eventProgress"></div></div>
+  <div class="statgrid">
+    <label>Score<input id="score" type="number" inputmode="numeric"></label>
+    <label>Iron<input id="iron" type="number" inputmode="numeric"></label>
+    <label>Gunpowder<input id="gp" type="number" inputmode="numeric"></label>
+    <label>Steel<input id="steel" type="number" inputmode="numeric"></label>
+    <label>Gems<input id="gems" type="number" inputmode="numeric"></label>
+  </div>
+</section>
+<section class="actions card">
+  <button id="screenshotBtn" class="primary">Update from Screenshot</button>
+  <input id="fileInput" type="file" accept="image/*" hidden>
+  <button id="sleepBtn" class="sleep">I'm going to sleep</button>
+  <button id="wakeBtn" class="secondary" hidden>I'm awake</button>
+  <div id="sleepInfo" class="notice" hidden></div>
+</section>
+<section class="card next"><div class="section-title"><span>Next best action</span><span id="dayBadge">Day 1</span></div><div id="nextAction"></div></section>
+<section class="card">
+  <div class="tabs">
+    <button class="tab active" data-tab="guide">Plan</button>
+    <button class="tab" data-tab="state">State</button>
+    <button class="tab" data-tab="forecast">Forecast</button>
+    <button class="tab" data-tab="tips">Guidance</button>
+  </div>
+  <div id="guideTab" class="tabpane active">
+    <div class="filterrow"><select id="dayFilter"><option value="all">All steps</option><option value="1">Day 1</option><option value="2">Day 2</option><option value="3">Day 3 / endgame</option></select><label class="compact"><input type="checkbox" id="hideDone"> Hide done</label></div>
+    <div id="guideList"></div>
+  </div>
+  <div id="stateTab" class="tabpane">
+    <h3>Stations & forecast inputs</h3>
+    <div id="stationInputs" class="formgrid"></div>
+    <h3>Board</h3>
+    <p class="muted">The screenshot reader tries to recognise the 5×8 board. Review the detected cells before applying them. Empty/uncertain cells are safe to leave empty.</p>
+    <div id="board" class="board-grid"></div>
+    <div class="row"><button id="addBoard" class="secondary">Add board item</button><button id="clearBoard" class="ghost">Clear board</button></div>
+  </div>
+  <div id="forecastTab" class="tabpane"><div id="forecast"></div></div>
+  <div id="tipsTab" class="tabpane"><div id="tips"></div></div>
+</section>
+<section class="card screenshot-card" id="screenshotCard" hidden>
+  <div class="section-title"><span>Screenshot analysis</span><button id="closeShot" class="ghost">Close</button></div>
+  <img id="shotPreview" alt="Game screenshot">
+  <div id="ocrStatus" class="notice">Reading screenshot locally. The prototype does not upload it.</div>
+  <div id="ocrResults"></div>
+  <div class="detected-grid-wrap"><h3>Detected board</h3><div id="detectedGrid" class="detected-grid"></div></div>
+  <div class="row"><button id="applyDetected" class="primary">Apply detected state</button><button id="discardDetected" class="ghost">Discard</button></div>
+</section>
+</main>
+<footer>Source basis: the supplied Sibling Rivalry Guide workbook and saved Sibling Rivalry wiki page. Forecast assumptions are shown explicitly and remain editable.</footer>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
