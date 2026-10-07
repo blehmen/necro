@@ -13,8 +13,32 @@ const stationDefs=[
  ['anvil','Anvil level',4],['at','Alchemy Table level',2],['ironCap','Iron cap',300000],['crates','Max-level Iron Crates held',0],['banners','Complete banners on board',0],['damageHour','Cannon damage/hour',169000],['scoreMult','Score multiplier',1.3],['bombUp','Bomb damage upgrades maxed',false],['mageHp','Mage/Magic Decoy HP currently/planned',316000]
 ];
 async function load(){
- guide=await fetch('data/guide.json').then(r=>r.json()); tips=await fetch('data/tips.json').then(r=>r.json()); cfg=await fetch('data/forecast.json').then(r=>r.json());
- const d=await fetch('data/default-state.json').then(r=>r.json()); state=JSON.parse(localStorage.getItem(SKEY)||'null')||normalize(d); bind(); renderAll();
+ // Bind the UI first. A failed data request must never disable buttons such as
+ // screenshot import. GitHub Pages/service-worker cache failures are handled
+ // independently below.
+ bind();
+ try {
+   const [g,t,c,d] = await Promise.all([
+     fetch('data/guide.json').then(r=>{if(!r.ok)throw new Error('guide.json '+r.status);return r.json()}),
+     fetch('data/tips.json').then(r=>{if(!r.ok)throw new Error('tips.json '+r.status);return r.json()}),
+     fetch('data/forecast.json').then(r=>{if(!r.ok)throw new Error('forecast.json '+r.status);return r.json()}),
+     fetch('data/default-state.json').then(r=>{if(!r.ok)throw new Error('default-state.json '+r.status);return r.json()})
+   ]);
+   guide=g; tips=t; cfg=c;
+   state=JSON.parse(localStorage.getItem(SKEY)||'null')||normalize(d);
+ } catch(e) {
+   console.error('PWA data load failed:',e);
+   guide=Array.isArray(guide)?guide:[]; tips=Array.isArray(tips)?tips:[];
+   cfg=cfg&&cfg.sourceGuidance?cfg:{sourceGuidance:[]};
+   const fallback={score:0,iron:0,gunpowder:0,steel:0,gems:0,eventEnd:null,sleeping:false,sleepStarted:null,sleepWake:null,completed:{},board:{},stations:{},lastScreenshot:null};
+   state=normalize(JSON.parse(localStorage.getItem(SKEY)||'null')||fallback);
+   showAppError('Some guide data could not be loaded. Screenshot import is still available.');
+ }
+ renderAll();
+}
+function showAppError(msg){
+ const el=$('appStatus');
+ if(el){el.hidden=false;el.textContent=msg;}
 }
 function normalize(s){
  s=s||{};s.score=+s.score||0;s.iron=+s.iron||0;s.gunpowder=+s.gunpowder||0;s.steel=+s.steel||0;s.gems=+s.gems||0;
@@ -24,7 +48,21 @@ function save(){localStorage.setItem(SKEY,JSON.stringify(state))}
 function bind(){
  ['score','iron','gp','steel','gems'].forEach(id=>$(id).addEventListener('change',e=>{state[id==='gp'?'gunpowder':id]=Math.max(0,Number(e.target.value)||0);save();renderAll()}));
  $('resetBtn').onclick=()=>{if(confirm('Reset the local event state?')){localStorage.removeItem(SKEY);location.reload()}};
- $('screenshotBtn').onclick=()=>$('fileInput').click();$('fileInput').onchange=e=>{if(e.target.files[0]) analyzeScreenshot(e.target.files[0])};
+ $('screenshotBtn').onclick=()=>{
+   const input=$('fileInput');
+   if(!input){showAppError('Screenshot input is missing from the page.');return;}
+   input.value='';
+   input.click();
+ };
+ $('fileInput').onchange=e=>{
+   const file=e.target.files&&e.target.files[0];
+   if(!file)return;
+   analyzeScreenshot(file).catch(err=>{
+     console.error('Screenshot analysis failed:',err);
+     $('ocrStatus').textContent='Screenshot could not be processed: '+(err?.message||err);
+     showAppError('Screenshot processing failed. The image preview is still available.');
+   });
+ };
  $('setEventBtn').onclick=()=>{const v=prompt('Enter event end time in local time, e.g. 2026-10-10T14:00');if(v){const d=new Date(v);if(!isNaN(d)){state.eventEnd=d.toISOString();save();renderAll()}}};
  $('sleepBtn').onclick=()=>sleep();$('wakeBtn').onclick=()=>wake();$('closeShot').onclick=()=>$('screenshotCard').hidden=true;
  $('applyDetected').onclick=applyDetected;$('discardDetected').onclick=()=>{$('screenshotCard').hidden=true;pendingDetected=null};
@@ -78,10 +116,45 @@ function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;',
 function parseCompact(s){if(!s)return null;s=String(s).replace(/,/g,'').replace(/\s/g,'').replace(/[Oo]/g,'0');let m=s.match(/(-?[0-9]+(?:\.[0-9]+)?)([kKmMbB])?/);if(!m)return null;let n=Number(m[1]);const u=(m[2]||'').toLowerCase();if(u==='k')n*=1e3;if(u==='m')n*=1e6;if(u==='b')n*=1e9;return Math.round(n)}
 async function ocrCrop(img,box){const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*(box[2]-box[0]));c.height=Math.round(img.naturalHeight*(box[3]-box[1]));const x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(img,img.naturalWidth*box[0],img.naturalHeight*box[1],img.naturalWidth*(box[2]-box[0]),img.naturalHeight*(box[3]-box[1]),0,0,c.width,c.height);const r=await Tesseract.recognize(c,'eng',{logger:m=>{if(m.status==='recognizing text')$('ocrStatus').textContent=`OCR ${Math.round((m.progress||0)*100)}%`}});return r.data.text}
 const OCR_BOXES={score:[.045,.058,.205,.102],iron:[.235,.058,.485,.103],gp:[.495,.058,.675,.103],gems:[.70,.058,.86,.103],event:[.015,.135,.16,.22]};
-async function analyzeScreenshot(file){$('screenshotCard').hidden=false;$('ocrStatus').textContent='Loading screenshot…';$('ocrResults').innerHTML='';const url=URL.createObjectURL(file);const img=new Image();img.src=url;await new Promise((res,rej)=>{img.onload=res;img.onerror=rej});$('shotPreview').src=url;state.lastScreenshot={name:file.name,time:new Date().toISOString()};save();let detected={score:null,iron:null,gunpowder:null,steel:null,gems:null,eventText:null,board:{}};
- if(window.Tesseract){for(const [key,box] of Object.entries(OCR_BOXES)){try{const text=await ocrCrop(img,box);if(key==='event')detected.eventText=text;else if(key==='gp')detected.gunpowder=parseCompact(text);else if(key==='score')detected.score=parseCompact(text);else if(key==='iron')detected.iron=parseCompact(text);else if(key==='gems')detected.gems=parseCompact(text);else if(key==='steel')detected.steel=parseCompact(text)}catch(e){}}}
- $('ocrStatus').textContent='OCR finished. Review the values before applying.';$('ocrResults').innerHTML=`<div class="statgrid">${['score','iron','gunpowder','steel','gems'].map(k=>`<label>${k==='gunpowder'?'Gunpowder':k[0].toUpperCase()+k.slice(1)}<input id="det-${k}" type="number" value="${detected[k]??''}"></label>`).join('')}</div><div class="notice">Detected event text: ${escapeHtml(detected.eventText||'—')}. If OCR missed a value, edit it here before applying.</div>`;
- const board=await detectBoard(img);detected.board=board;pendingDetected=detected;renderDetected(board)
+async function analyzeScreenshot(file){
+ $('screenshotCard').hidden=false;
+ $('ocrStatus').textContent='Loading screenshot…';
+ $('ocrResults').innerHTML='';
+ const url=URL.createObjectURL(file);
+ const img=new Image();
+ img.src=url;
+ await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('The selected file is not a readable image.'))});
+ $('shotPreview').src=url;
+ state.lastScreenshot={name:file.name,time:new Date().toISOString()};
+ save();
+ let detected={score:null,iron:null,gunpowder:null,steel:null,gems:null,eventText:null,board:{}};
+ if(window.Tesseract){
+   for(const [key,box] of Object.entries(OCR_BOXES)){
+     try{
+       const text=await ocrCrop(img,box);
+       if(key==='event')detected.eventText=text;
+       else if(key==='gp')detected.gunpowder=parseCompact(text);
+       else if(key==='score')detected.score=parseCompact(text);
+       else if(key==='iron')detected.iron=parseCompact(text);
+       else if(key==='gems')detected.gems=parseCompact(text);
+       else if(key==='steel')detected.steel=parseCompact(text);
+     }catch(e){console.warn('OCR crop failed',key,e);}
+   }
+ } else {
+   $('ocrStatus').textContent='OCR engine is unavailable. Board recognition can still be reviewed manually.';
+ }
+ $('ocrResults').innerHTML=`<div class="statgrid">${['score','iron','gunpowder','steel','gems'].map(k=>`<label>${k==='gunpowder'?'Gunpowder':k[0].toUpperCase()+k.slice(1)}<input id="det-${k}" type="number" value="${detected[k]??''}"></label>`).join('')}</div><div class="notice">Detected event text: ${escapeHtml(detected.eventText||'—')}. If OCR missed a value, edit it here before applying.</div>`;
+ $('ocrStatus').textContent=window.Tesseract?'OCR finished. Reviewing board…':'OCR unavailable. Reviewing board…';
+ try {
+   const board=await detectBoard(img);
+   detected.board=board; pendingDetected=detected; renderDetected(board);
+   $('ocrStatus').textContent=window.Tesseract?'Screenshot read. Review the detected values and board before applying.':'Screenshot loaded. Review the board; OCR was unavailable.';
+ } catch(e) {
+   console.error('Board detection failed:',e);
+   pendingDetected=detected;
+   renderDetected({});
+   $('ocrStatus').textContent='Screenshot loaded, but board recognition failed. You can still enter the values manually.';
+ }
 }
 async function loadTemplate(file){if(templateCache.find(x=>x.file===file))return templateCache.find(x=>x.file===file);const im=new Image();im.src='assets/icons/'+file;await new Promise((res,rej)=>{im.onload=res;im.onerror=()=>res()});if(!im.naturalWidth)return null;const c=document.createElement('canvas');c.width=c.height=48;const x=c.getContext('2d');x.clearRect(0,0,48,48);x.drawImage(im,4,4,40,40);const d=x.getImageData(0,0,48,48).data;let alpha=0;for(let i=3;i<d.length;i+=4)if(d[i]>40)alpha++;if(alpha<30)return null;const obj={file,im,canvas:c,data:d,alpha};templateCache.push(obj);return obj}
 const TEMPLATE_FILES=['Musketeer.webp','Warrior.webp','Battle_Mage.webp','Iron_Grunt.webp','Gunpowder_Grunt.webp','Steel_Grunt.webp','Floating_Weapon_L1.webp','Floating_Weapon_L2.webp','Floating_Weapon_L3.webp','Floating_Weapon_L4.webp','Floating_Weapon_L5.webp','Floating_Weapon_L6.webp','Bomb_L1.webp','Bomb_L2.webp','Furnace_L2.png','Furnace_L5.png','Anvil_L5.webp','Alchemy_Table_L2.webp','Sibling_More_Score.png','Sibling_Barrage_of_Banners.png','Sibling_Iron_Stores.png','Sibling_Sharper_Blades.png','Sibling_Bigger_Boom.png','Sibling_Huge_Explosions.png'];
