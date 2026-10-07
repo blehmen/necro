@@ -10,7 +10,7 @@
 </head>
 <body>
 <header>
-  <div class="brand"><span class="star">★</span><div><b>Sibling Rivalry</b><small>Companion PWA · v0.2</small></div></div>
+  <div class="brand"><span class="star">★</span><div><b>Sibling Rivalry</b><small>Companion PWA · v0.4</small></div></div>
   <div class="header-actions"><button id="resetBtn" class="ghost">Reset</button></div>
 </header>
 <div id="appStatus" class="notice" hidden></div>
@@ -27,8 +27,8 @@
   </div>
 </section>
 <section class="actions card">
-  <button id="screenshotBtn" class="primary">Update from Screenshot</button>
-  <input id="fileInput" type="file" accept="image/*" hidden>
+  <label id="screenshotBtn" class="primary upload-label" for="fileInput">Update from Screenshot</label>
+  <input id="fileInput" class="file-input" type="file" accept="image/*">
   <button id="sleepBtn" class="sleep">I'm going to sleep</button>
   <button id="wakeBtn" class="secondary" hidden>I'm awake</button>
   <div id="sleepInfo" class="notice" hidden></div>

@@ -1,4 +1,4 @@
-const SKEY="sr-pwa-state-v02";
+const SKEY="sr-pwa-state-v04";
 let guide=[], tips=[], cfg={}, state=null, pendingDetected=null, templateCache=[];
 const $=id=>document.getElementById(id);
 const DAY_START={1:0,2:37,3:60};
@@ -48,12 +48,6 @@ function save(){localStorage.setItem(SKEY,JSON.stringify(state))}
 function bind(){
  ['score','iron','gp','steel','gems'].forEach(id=>$(id).addEventListener('change',e=>{state[id==='gp'?'gunpowder':id]=Math.max(0,Number(e.target.value)||0);save();renderAll()}));
  $('resetBtn').onclick=()=>{if(confirm('Reset the local event state?')){localStorage.removeItem(SKEY);location.reload()}};
- $('screenshotBtn').onclick=()=>{
-   const input=$('fileInput');
-   if(!input){showAppError('Screenshot input is missing from the page.');return;}
-   input.value='';
-   input.click();
- };
  $('fileInput').onchange=e=>{
    const file=e.target.files&&e.target.files[0];
    if(!file)return;
@@ -115,7 +109,7 @@ function fmtNum(n){return Math.round(Number(n)||0).toLocaleString()}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function parseCompact(s){if(!s)return null;s=String(s).replace(/,/g,'').replace(/\s/g,'').replace(/[Oo]/g,'0');let m=s.match(/(-?[0-9]+(?:\.[0-9]+)?)([kKmMbB])?/);if(!m)return null;let n=Number(m[1]);const u=(m[2]||'').toLowerCase();if(u==='k')n*=1e3;if(u==='m')n*=1e6;if(u==='b')n*=1e9;return Math.round(n)}
 async function ocrCrop(img,box){const c=document.createElement('canvas');c.width=Math.round(img.naturalWidth*(box[2]-box[0]));c.height=Math.round(img.naturalHeight*(box[3]-box[1]));const x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(img,img.naturalWidth*box[0],img.naturalHeight*box[1],img.naturalWidth*(box[2]-box[0]),img.naturalHeight*(box[3]-box[1]),0,0,c.width,c.height);const r=await Tesseract.recognize(c,'eng',{logger:m=>{if(m.status==='recognizing text')$('ocrStatus').textContent=`OCR ${Math.round((m.progress||0)*100)}%`}});return r.data.text}
-const OCR_BOXES={score:[.045,.058,.205,.102],iron:[.235,.058,.485,.103],gp:[.495,.058,.675,.103],gems:[.70,.058,.86,.103],event:[.015,.135,.16,.22]};
+const OCR_BOXES={score:[.105,.067,.205,.103],iron:[.315,.067,.445,.103],gp:[.685,.067,.805,.103],gems:[.825,.067,.925,.103],event:[.02,.145,.145,.215]};
 async function analyzeScreenshot(file){
  $('screenshotCard').hidden=false;
  $('ocrStatus').textContent='Loading screenshot…';
@@ -125,6 +119,7 @@ async function analyzeScreenshot(file){
  img.src=url;
  await new Promise((res,rej)=>{img.onload=res;img.onerror=()=>rej(new Error('The selected file is not a readable image.'))});
  $('shotPreview').src=url;
+ $('ocrStatus').textContent=`Screenshot loaded (${Math.round(file.size/1024)} KB). Starting OCR…`;
  state.lastScreenshot={name:file.name,time:new Date().toISOString()};
  save();
  let detected={score:null,iron:null,gunpowder:null,steel:null,gems:null,eventText:null,board:{}};
@@ -159,7 +154,7 @@ async function analyzeScreenshot(file){
 async function loadTemplate(file){if(templateCache.find(x=>x.file===file))return templateCache.find(x=>x.file===file);const im=new Image();im.src='assets/icons/'+file;await new Promise((res,rej)=>{im.onload=res;im.onerror=()=>res()});if(!im.naturalWidth)return null;const c=document.createElement('canvas');c.width=c.height=48;const x=c.getContext('2d');x.clearRect(0,0,48,48);x.drawImage(im,4,4,40,40);const d=x.getImageData(0,0,48,48).data;let alpha=0;for(let i=3;i<d.length;i+=4)if(d[i]>40)alpha++;if(alpha<30)return null;const obj={file,im,canvas:c,data:d,alpha};templateCache.push(obj);return obj}
 const TEMPLATE_FILES=['Musketeer.webp','Warrior.webp','Battle_Mage.webp','Iron_Grunt.webp','Gunpowder_Grunt.webp','Steel_Grunt.webp','Floating_Weapon_L1.webp','Floating_Weapon_L2.webp','Floating_Weapon_L3.webp','Floating_Weapon_L4.webp','Floating_Weapon_L5.webp','Floating_Weapon_L6.webp','Bomb_L1.webp','Bomb_L2.webp','Furnace_L2.png','Furnace_L5.png','Anvil_L5.webp','Alchemy_Table_L2.webp','Sibling_More_Score.png','Sibling_Barrage_of_Banners.png','Sibling_Iron_Stores.png','Sibling_Sharper_Blades.png','Sibling_Bigger_Boom.png','Sibling_Huge_Explosions.png'];
 async function cellScore(cellCanvas,t){const c=document.createElement('canvas');c.width=c.height=48;const x=c.getContext('2d');x.drawImage(cellCanvas,0,0,48,48);const src=x.getImageData(0,0,48,48).data,td=t.data;let sum=0,n=0;for(let i=0;i<src.length;i+=4){const a=td[i+3];if(a<40)continue;const dr=src[i]-td[i],dg=src[i+1]-td[i+1],db=src[i+2]-td[i+2];sum+=(dr*dr+dg*dg+db*db)*(a/255);n+=a/255}return n?sum/n:1e9}
-async function detectBoard(img){const W=img.naturalWidth,H=img.naturalHeight;const bx=.135*W,by=.275*H,bw=.75*W,bh=.535*H;const cols=5,rows=8;const out={};const templates=[];for(const f of TEMPLATE_FILES){const t=await loadTemplate(f);if(t)templates.push(t)};for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){const cc=document.createElement('canvas');cc.width=cc.height=80;const x=cc.getContext('2d');x.drawImage(img,bx+c*bw/cols,by+r*bh/rows,bw/cols,bh/rows,0,0,80,80);let best={name:'Empty / unknown',score:1e9};for(const t of templates){const sc=await cellScore(cc,t);if(sc<best.score)best={name:labelFromFile(t.file),score:sc}}if(best.score<18000)out[`${r}-${c}`]={name:best.name,score:Math.round(best.score)};else out[`${r}-${c}`]={name:'Empty / unknown',score:Math.round(best.score)}}}return out}
+async function detectBoard(img){const W=img.naturalWidth,H=img.naturalHeight;const bx=.135*W,by=.295*H,bw=.75*W,bh=.535*H;const cols=5,rows=8;const out={};const templates=[];for(const f of TEMPLATE_FILES){const t=await loadTemplate(f);if(t)templates.push(t)};for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){const cc=document.createElement('canvas');cc.width=cc.height=80;const x=cc.getContext('2d');x.drawImage(img,bx+c*bw/cols,by+r*bh/rows,bw/cols,bh/rows,0,0,80,80);let best={name:'Empty / unknown',score:1e9};for(const t of templates){const sc=await cellScore(cc,t);if(sc<best.score)best={name:labelFromFile(t.file),score:sc}}if(best.score<18000)out[`${r}-${c}`]={name:best.name,score:Math.round(best.score)};else out[`${r}-${c}`]={name:'Empty / unknown',score:Math.round(best.score)}}}return out}
 function labelFromFile(f){let s=f.replace(/\.(webp|png)$/,'').replaceAll('_',' ');s=s.replace('Floating Weapon','Weapon').replace('Battle Mage','Battle Mage');return s}
 function renderDetected(board){$('detectedGrid').innerHTML='';for(let r=0;r<8;r++)for(let c=0;c<5;c++){const k=`${r}-${c}`,v=board[k]||{name:'Empty / unknown'};const d=document.createElement('div');d.className='det-cell';d.innerHTML=`<span>${r+1},${c+1}</span><select data-cell="${k}">${['Empty / unknown',...boardOptions].map(o=>`<option ${o===v.name?'selected':''}>${escapeHtml(o)}</option>`).join('')}</select><small>${v.score??''}</small>`;$('detectedGrid').appendChild(d)}$('detectedGrid').querySelectorAll('select').forEach(s=>s.onchange=()=>{pendingDetected.board[s.dataset.cell]={name:s.value,score:0}})}
 function applyDetected(){if(!pendingDetected)return;for(const k of ['score','iron','gunpowder','steel','gems']){const v=Number($('det-'+k)?.value);if(Number.isFinite(v)&&v>=0)state[k]=v}state.board={};Object.values(pendingDetected.board).forEach(v=>{if(v.name&&v.name!=='Empty / unknown')state.board[v.name]=(state.board[v.name]||0)+1});save();$('screenshotCard').hidden=true;pendingDetected=null;renderAll()}

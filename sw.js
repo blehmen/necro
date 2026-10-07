@@ -1,4 +1,4 @@
-const CACHE='sr-pwa-v03';
+const CACHE='sr-pwa-v04';
 const CORE=['./','./index.html','./style.css','./app.js','./manifest.webmanifest','./data/guide.json','./data/tips.json','./data/default-state.json','./data/forecast.json'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
