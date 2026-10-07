@@ -1,0 +1,605 @@
+[
+  {
+    "id": 1,
+    "action": "Cannon1 Shop Day1 Ad",
+    "gp": "0",
+    "steel": "25",
+    "time": "3d",
+    "tips": "Keep Furnaces and Canons at their original level. Merging level 2, 4 or 5 Furnaces, and Cannons beyond level 2 is not recommended",
+    "day": 1
+  },
+  {
+    "id": 2,
+    "action": "Open 2 banners",
+    "gp": "0",
+    "steel": "25",
+    "time": "3d",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 3,
+    "action": "Iron Cap1",
+    "gp": "0",
+    "steel": "15",
+    "time": "3d",
+    "tips": "Iron Cap upgrades rise the amount Iron Crates give, not only maximum iron",
+    "day": 1
+  },
+  {
+    "id": 4,
+    "action": "Kill a Musk with 2 Max Level Weapons",
+    "gp": "0",
+    "steel": "15",
+    "time": "2d 23h 55m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 5,
+    "action": "Use a Level 3 Weapon on 2 GP Grunts",
+    "gp": "0",
+    "steel": "15",
+    "time": "2d 23h 55m",
+    "tips": "This is done to speed up the death checkmark for cannon purchases",
+    "day": 1
+  },
+  {
+    "id": 6,
+    "action": "Cash 1 Iron Crate level 2",
+    "gp": "0",
+    "steel": "15",
+    "time": "2d 23h 35m",
+    "tips": "Try to avoid using iron crates except when said here. Use 1 or 2 if you feel like your lair is too full",
+    "day": 1
+  },
+  {
+    "id": 7,
+    "action": "Kill a Musk with 2 Max Level Weapons",
+    "gp": "30",
+    "steel": "15",
+    "time": "2d 23h 35m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 8,
+    "action": "Banner1",
+    "gp": "20",
+    "steel": "5",
+    "time": "2d 23h 35m",
+    "tips": "This will be the priority on Upgrades",
+    "day": 1
+  },
+  {
+    "id": 9,
+    "action": "Wait on 2 Iron + 4 GP Grunts deaths",
+    "gp": "20",
+    "steel": "5",
+    "time": "2d 22h 45m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 10,
+    "action": "Cannon2",
+    "gp": "0",
+    "steel": "5",
+    "time": "2d 22h 45m",
+    "tips": "SPLASH DAMAGE GLITCH ON THE FRONT PAGE",
+    "day": 1
+  },
+  {
+    "id": 11,
+    "action": "Open 3 banners",
+    "gp": "0",
+    "steel": "5",
+    "time": "2d 22h 45m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 12,
+    "action": "Open 1 banner",
+    "gp": "0",
+    "steel": "5",
+    "time": "2d 22h 30m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 13,
+    "action": "Cash 2 Iron Crates level 2",
+    "gp": "0",
+    "steel": "5",
+    "time": "2d 22h 20m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 14,
+    "action": "Kill a Musk with 2 Max Level Weapons",
+    "gp": "30",
+    "steel": "5",
+    "time": "2d 22h 20m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 15,
+    "action": "Banner2",
+    "gp": "5",
+    "steel": "5",
+    "time": "2d 22h 15m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 16,
+    "action": "Kill Shop Day1 Musk with 2 Max Level Weapons",
+    "gp": "30",
+    "steel": "5",
+    "time": "2d 21h 40m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 17,
+    "action": "Cannon3",
+    "gp": "10",
+    "steel": "5",
+    "time": "2d 20h 40m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 18,
+    "action": "Calculate damage with Weapons to kill Steel Grunts before next banner timer ends",
+    "gp": "10",
+    "steel": "35",
+    "time": "2d 20h 20m",
+    "tips": "A level 3 and a level 4 weapon on 2 different Steel Grunts usually does it",
+    "day": 1
+  },
+  {
+    "id": 19,
+    "action": "Banner 3",
+    "gp": "10",
+    "steel": "10",
+    "time": "2d 19h 05m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 20,
+    "action": "Open 3 banners",
+    "gp": "10",
+    "steel": "10",
+    "time": "2d 19h 00m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 21,
+    "action": "Open 1 banner",
+    "gp": "10",
+    "steel": "10",
+    "time": "2d 18h 00m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 22,
+    "action": "Kill a Musk with 2 Max Level Weapons",
+    "gp": "40",
+    "steel": "10",
+    "time": "2d 17h 40m",
+    "tips": "Use 1 Iron Crate level 2 if you couldn't spawn said Musketeer. Bad Anvil RNG, sometimes it happens",
+    "day": 1
+  },
+  {
+    "id": 23,
+    "action": "Cannon4",
+    "gp": "20",
+    "steel": "10",
+    "time": "2d 17h 40m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 24,
+    "action": "Sleep ",
+    "gp": "20",
+    "steel": "10",
+    "time": null,
+    "tips": "Put as much HP on board as possible before this so you don't waste cannon damage",
+    "day": 1
+  },
+  {
+    "id": 25,
+    "action": "Claim Steel level 4 from dead Warrior + dead Steel Grunts",
+    "gp": "20",
+    "steel": "40",
+    "time": "2d 10h 20m",
+    "tips": "Banners should be spawned in groups of 4, so their piles of S and GP takes only 1 space each",
+    "day": 1
+  },
+  {
+    "id": 26,
+    "action": "Kill 2 Musks with 4 Max Level Weapons",
+    "gp": "50",
+    "steel": "40",
+    "time": "2d 10h 10m",
+    "tips": "If you can't get enough musks, claim an Iron Crate or 2. The less Iron Crates used, the better",
+    "day": 1
+  },
+  {
+    "id": 27,
+    "action": "Cannon Dmg1",
+    "gp": "25",
+    "steel": "40",
+    "time": "2d 10h 00m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 28,
+    "action": "Steel3 Shop Day1",
+    "gp": "0",
+    "steel": "70",
+    "time": "2d 10h 00m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 29,
+    "action": "Anvil2 Shop Day1",
+    "gp": "0",
+    "steel": "30",
+    "time": "2d 10h 00m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 30,
+    "action": "Anvil1",
+    "gp": "0",
+    "steel": "5",
+    "time": "2d 10h 00m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 31,
+    "action": "Wait for a Musk to die by cannons + GP Grunts",
+    "gp": "30",
+    "steel": "5",
+    "time": null,
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 32,
+    "action": "Cannon5",
+    "gp": "10",
+    "steel": "5",
+    "time": "2d 8h 00m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 33,
+    "action": "Steel3 from Shop Day1 + GP from Musk + GP and Steel from Banner Grunts",
+    "gp": "40",
+    "steel": "35",
+    "time": null,
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 34,
+    "action": "Iron Cap2",
+    "gp": "20",
+    "steel": "35",
+    "time": "2d 5h 20m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 35,
+    "action": "Cannon Dmg2 + Cannon Dmg3",
+    "gp": "0",
+    "steel": "0",
+    "time": "2d 5h 20m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 36,
+    "action": "Cash Iron Crate level 2 if you run out of enemies",
+    "gp": "0",
+    "steel": "0",
+    "time": null,
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 37,
+    "action": "Wait for a Musk to die + GP Grunts",
+    "gp": "30",
+    "steel": "0",
+    "time": "2d 4h 10m",
+    "tips": "",
+    "day": 1
+  },
+  {
+    "id": 38,
+    "action": "Hold 25 GP for Furnace from Shop Day2",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 39,
+    "action": "Furnace Shop Day2",
+    "gp": null,
+    "steel": null,
+    "time": "2d 00h 00m",
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 40,
+    "action": "Steel 3 Shop Ad Day2",
+    "gp": null,
+    "steel": null,
+    "time": "2d 00h 00m",
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 42,
+    "action": "Score1",
+    "gp": null,
+    "steel": "10",
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 43,
+    "action": "Cannon 6",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 44,
+    "action": "Cannon 7",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 45,
+    "action": "Iron Cap3",
+    "gp": null,
+    "steel": "25",
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 46,
+    "action": "Iron Cap4",
+    "gp": "25",
+    "steel": "25",
+    "time": null,
+    "tips": "From now on you can cash any level 2 Iron Crates, as long as you don't surpass the capacity",
+    "day": 2
+  },
+  {
+    "id": 47,
+    "action": "Cannon 8",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "Summon Musks and Knights in pairs, or one of each + 4 banners. This is key to conserve space and have lots of cannons",
+    "day": 2
+  },
+  {
+    "id": 48,
+    "action": "Cannon 9",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 49,
+    "action": "Cannon 10",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 50,
+    "action": "Score2",
+    "gp": "25",
+    "steel": "15",
+    "time": null,
+    "tips": "After Score2 purchase, the next Steel is going to be for Anvil4. Try and not spam Anvil3 too much",
+    "day": 2
+  },
+  {
+    "id": 51,
+    "action": "Cannon 11",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 52,
+    "action": "Cannon 12",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 53,
+    "action": "Cannon 13",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 54,
+    "action": "Fancy Decoy Shop Day2",
+    "gp": "15",
+    "steel": null,
+    "time": null,
+    "tips": "To handle space issues when you have +12 cannons, wait until you have enough GP to upgrade",
+    "day": 2
+  },
+  {
+    "id": 55,
+    "action": "Cannon 14",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "2 cannons at once, merge 2 of the ones you already have on the board, empty the Iron you",
+    "day": 2
+  },
+  {
+    "id": 56,
+    "action": "Cannon 15",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "want, or clear 4 banners (whatever you need to do atm), then buy 2 new cannons after you finish",
+    "day": 2
+  },
+  {
+    "id": 57,
+    "action": "Cannon 16",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "^This only works as long as you don't have all your cannons at level 2",
+    "day": 2
+  },
+  {
+    "id": 58,
+    "action": "4 Anvil level 1",
+    "gp": null,
+    "steel": "100",
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 59,
+    "action": "Cannons+",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "The goal is to have around 15 Cannons level 2 and 2 level 1 before the end of day 2",
+    "day": 2
+  },
+  {
+    "id": 60,
+    "action": "Score3",
+    "gp": "50",
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 2
+  },
+  {
+    "id": 61,
+    "action": "Hold 40 GP and 60 S for Shop Day3",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "Day3 is very active because of high cannon damage. 3 Knights die in less than an hour",
+    "day": 3
+  },
+  {
+    "id": 62,
+    "action": "Mage Decoy Shop Day2",
+    "gp": null,
+    "steel": "25",
+    "time": null,
+    "tips": "Don't summon until you go to sleep so it tanks damage after the cannons kill everything else",
+    "day": 3
+  },
+  {
+    "id": 63,
+    "action": "Cannon Shop Day3",
+    "gp": null,
+    "steel": "60",
+    "time": null,
+    "tips": "Merge the 2 lvl 1 cannons to make space for the new cannon",
+    "day": 3
+  },
+  {
+    "id": 64,
+    "action": "Furnace Shop Day3",
+    "gp": "40",
+    "steel": null,
+    "time": null,
+    "tips": "You can merge 2 level 1 Furnaces to make room for the new one (the loss on iron is very low)",
+    "day": 3
+  },
+  {
+    "id": 65,
+    "action": "Bomb Damage 1 + 2 + 3",
+    "gp": "40",
+    "steel": "40",
+    "time": null,
+    "tips": "",
+    "day": 3
+  },
+  {
+    "id": 66,
+    "action": "The last couple million points will be done by killing Mages with Bombs",
+    "gp": "Alchemy table (AT) can have 4 different prices, depending on if you use level 2 or 3, and if you get the one from the shop or not",
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 3
+  },
+  {
+    "id": 67,
+    "action": "AT level 2 is cheaper, but less gunpowder efficient. Try and use the Forecast Tool to check how much Gunpowder and Steel you'll have, and check what AT suits best for your situation on the last tab",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 3
+  },
+  {
+    "id": 68,
+    "action": "Remember to have a Mage on the board if you can't check in often enough to always have targets. In this case you should probably aim for AT2, but always do the math. Measure twice, cut once",
+    "gp": null,
+    "steel": null,
+    "time": null,
+    "tips": "",
+    "day": 3
+  }
+]

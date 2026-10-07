@@ -1,0 +1,16 @@
+{
+  "score": 0,
+  "iron": 0,
+  "gunpowder": 0,
+  "steel": 0,
+  "gems": 0,
+  "eventEnd": null,
+  "sleeping": false,
+  "sleepStarted": null,
+  "sleepWake": null,
+  "currentStep": 0,
+  "completed": {},
+  "board": {},
+  "stations": {},
+  "lastScreenshot": null
+}

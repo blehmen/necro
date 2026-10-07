@@ -1,0 +1,91 @@
+{
+  "enemy": {
+    "Iron Grunt": {
+      "hp": 500,
+      "score": 250
+    },
+    "Gunpowder Grunt": {
+      "hp": 500,
+      "score": 500
+    },
+    "Steel Grunt": {
+      "hp": 2500,
+      "score": 1250
+    },
+    "Musketeer": {
+      "hp": 25000,
+      "score": 15000
+    },
+    "Warrior": {
+      "hp": 50000,
+      "score": 50000
+    },
+    "Battle Mage": {
+      "hp": 500000,
+      "score": 750000
+    }
+  },
+  "furnaceIronPerHour": [
+    3,
+    5,
+    8,
+    15,
+    25
+  ],
+  "anvil": {
+    "Anvil3": {
+      "muskIron": 34285.71,
+      "warriorIron": 120000
+    },
+    "Anvil4": {
+      "muskIron": 22857.14,
+      "warriorIron": 80000
+    },
+    "Anvil5": {
+      "muskIron": 34285.71,
+      "warriorIron": 48000
+    }
+  },
+  "at": {
+    "AT2": {
+      "noShop": {
+        "gp": 80,
+        "steel": 40,
+        "t1Time": 80
+      },
+      "shop": {
+        "gp": 40,
+        "steel": 50,
+        "t1Time": 40
+      }
+    },
+    "AT3": {
+      "noShop": {
+        "gp": 160,
+        "steel": 80,
+        "t1Time": 160
+      },
+      "shop": {
+        "gp": 120,
+        "steel": 90,
+        "t1Time": 120
+      }
+    }
+  },
+  "bombDamage": {
+    "t1": 50000,
+    "t2": 150000
+  },
+  "forecastAssumptions": [
+    "Bombs are used.",
+    "Bomb damage upgrades are maxed.",
+    "No damage is committed using floating weapons.",
+    "All T2 bombs are assumed to reach their full 150k damage against Mages."
+  ],
+  "sourceGuidance": [
+    "Complete the USER INPUT BOARD STATE on Day 3, preferably with more than 20 hours remaining.",
+    "Aim for roughly 500k\u20131M cannon-damage overflow over expected non-Mage HP because sleep can cause cannon damage to enter Mages.",
+    "If cannon damage is insufficient for maximum Mages, sacrifice Mage kills one at a time and recalculate.",
+    "Keep a Mage on the board if you cannot check often enough to always have targets; the source recommends doing the math before choosing AT2."
+  ]
+}
